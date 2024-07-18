@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+  <title>ANAWIYAK</title>
+</head>
+<body>
+  <main class="h">
+    <h1>Join A Room</h1>
+    </main>
+    <br>
+    <div class="inn">
+      <input type="text" id="roomCode" placeholder="Enter the room code" autocomplete="off">
+    </div>
+    <br>
+    <div class="koo">
+      <button  type="button" onclick="joinRoom()">Join The Room</button>
+    </div>
+
+  <script>
+    function joinRoom() {
+      var roomCode = document.getElementById('roomCode').value;
+      if (roomCode) {
+        window.location.href = 'chat_room.html?roomCode=' + roomCode;
+      } else {
+        alert("Please enter the room code");
+      }
+    }
+  </script>
+</body>
+</html>

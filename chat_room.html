@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <title>ANAWIYAK</title>
+</head>
+<body>
+  <main class="hh">
+    <p>Anawiyak</p>
+    <i><i><i class="fa-solid fa-ellipsis-vertical"></i></i></i>
+    </main>
+    <ul id="messagesContainer"></ul>
+    <div class="chat">
+        <input type="text" id="message" placeholder="Write your message here" autocomplete="off" >
+  <button type="submit" onclick="sendMessage()">Envoyé</button>
+    </div>
+  
+  <audio id="messageNotification" src="a.mp3" preload="auto"></audio>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyDYQu0S3y0wS7LXvAOHpeztToy_9SgfouQ",
+      authDomain: "anawiyak-5628c.firebaseapp.com",
+      databaseURL: "https://anawiyak-5628c-default-rtdb.firebaseio.com",
+      projectId: "anawiyak-5628c",
+      storageBucket: "anawiyak-5628c.appspot.com",
+      messagingSenderId: "35266246777",
+      appId: "1:35266246777:web:d0e575d4ec946446d43ca8",
+      measurementId: "G-0LKCN3D0F7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var currentRoomCode = urlParams.get('roomCode');
+
+    function getStoredName() {
+      return localStorage.getItem("userName");
+    }
+
+    function getStoredUserId() {
+      return localStorage.getItem("userId");
+    }
+
+    function sendMessage() {
+      var message = document.getElementById("message").value;
+      var userName = getStoredName();
+      var userId = getStoredUserId();
+
+      if (!userName) {
+        userName = prompt("Please enter your name:");
+        localStorage.setItem("userName", userName);
+      }
+
+      if (!userId) {
+        userId = generateUserId();
+        localStorage.setItem("userId", userId);
+      }
+
+      firebase.database().ref("rooms/" + currentRoomCode + "/messages").push().set({
+        "message": message,
+        "sender": userName,
+        "userId": userId
+      });
+
+      document.getElementById("message").value = "";
+      return false;
+    }
+
+    function generateUserId() {
+      return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
+    function listenForMessages() {
+      firebase.database().ref("rooms/" + currentRoomCode + "/messages").on("child_added", function(snapshot) {
+        var messageSender = snapshot.val().sender;
+        var messageSenderId = snapshot.val().userId;
+        var currentUserId = getStoredUserId();
+        var messageClass = messageSenderId === currentUserId ? "myMessage" : "otherMessage";
+
+        var html = "<li id='message-" + snapshot.key + "' class='message " + messageClass + "'>";
+        html += "<span class='sender'>" + messageSender + "</span>";
+        if (messageSenderId === currentUserId) {
+          html += "<button class='bun' data-id='" + snapshot.key + "' data-sender-id='" + messageSenderId + "' onclick='deleteMessage(this);'><i class='fa-solid fa-trash'></i></button>";
+        }
+        html += "<p>" + snapshot.val().message + "</p>";
+        html += "</li>";
+
+        document.getElementById("messagesContainer").innerHTML += html;
+
+        // تشغيل صوت التنبيه عند وصول رسالة جديدة
+        document.getElementById("messageNotification").play();
+      });
+
+      firebase.database().ref("rooms/" + currentRoomCode + "/messages").on("child_removed", function(snapshot) {
+        document.getElementById("message-" + snapshot.key).innerHTML = "This message has been removed";
+      });
+    }
+
+    function deleteMessage(self) {
+      var messageId = self.getAttribute("data-id");
+      var senderId = self.getAttribute("data-sender-id");
+
+      var currentUserId = getStoredUserId();
+      if (senderId === currentUserId) {
+        firebase.database().ref("rooms/" + currentRoomCode + "/messages").child(messageId).remove();
+      } else {
+        alert("You can only delete your own messages.");
+      }
+    }
+
+    listenForMessages();
+  </script>
+</body>
+</html>

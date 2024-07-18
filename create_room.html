@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+ <title>ANAWIYAK</title>
+</head>
+<body>
+  <main class="h">
+    <h1>Create A Room</h1>
+ </main>
+ <br>
+   <input   class="in" type="text" id="roomCode" autocomplete="off" >
+ <br>
+ <div class="ko">
+   <button type="button" onclick="createRoom()">Create A New Room</button>
+   <button type="button" onclick="window.location.href='chat_room.html?roomCode=' + document.getElementById('roomCode').value">Go To The Room</button>
+ </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyDYQu0S3y0wS7LXvAOHpeztToy_9SgfouQ",
+      authDomain: "anawiyak-5628c.firebaseapp.com",
+      databaseURL: "https://anawiyak-5628c-default-rtdb.firebaseio.com",
+      projectId: "anawiyak-5628c",
+      storageBucket: "anawiyak-5628c.appspot.com",
+      messagingSenderId: "35266246777",
+      appId: "1:35266246777:web:d0e575d4ec946446d43ca8",
+      measurementId: "G-0LKCN3D0F7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    function createRoom() {
+      var roomCode = Math.random().toString(36).substring(2, 7);
+      document.getElementById('roomCode').value = roomCode;
+    }
+    
+    
+    
+  </script>
+</body>
+</html>
